@@ -9,7 +9,6 @@ const (
 	tgBotHost = "api.telegram.org"
 )
 func main() {
-
 	tgClient = telegram.New(tgBotHost, mustToken())
 
 }
