@@ -14,24 +14,25 @@ package telegram
 // Объекты типа From и Chat содержат дополнительную информацию о пользователе и чате соответственно.
 
 type UpdatesResponse struct {
-    Ok      bool   `json:"ok"`
-    Result []Update `json:"result"`
-}
-type Update struct {
-    ID      int    `json:"update_id"`
-    Message *IncomingMessage `json:"message"`
+	Ok     bool     `json:"ok"`
+	Result []Update `json:"result"`
 }
 
-type IncomingMessage struct{
-    Text string  `json:"text"`
-    From From    `json:"from"`
-    Chat Chat    `json:"chat"` 
+type Update struct {
+	ID      int              `json:"update_id"`
+	Message *IncomingMessage `json:"message"`
+}
+
+type IncomingMessage struct {
+	Text string `json:"text"`
+	From From   `json:"from"`
+	Chat Chat   `json:"chat"`
 }
 
 type From struct {
-    Username string `json:"username"`
+	Username string `json:"username"`
 }
 
 type Chat struct {
-    ID int `json:"id"`
+	ID int `json:"id"`
 }
