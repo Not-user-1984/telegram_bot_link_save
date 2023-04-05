@@ -31,6 +31,23 @@ func New(client *telegram.Client, storage storage.Storage) *Processor{
 		storage: storage,
 	}
 }
+
+
+// Данный код является методом Fetch,
+// определенным для структуры Processor 
+// Метод принимает два аргумента: 
+// указатель на объект типа Processor (p) и целочисленное значение limit.
+// Метод возвращает список объектов типа events.Event и ошибку.
+// Вызывается метод Updates объекта tg (поле структуры Processor),
+// чтобы получить обновления из Telegram API.
+// Если возникла ошибка при получении обновлений,
+// метод возвращает ошибку с помощью функции e.Wrap.
+// Если длина списка обновлений равна 0, метод возвращает nil, nil.
+// В противном случае создается пустой список res типа events.Event.
+// Для каждого обновления в списке обновлений создается объект events.Event
+// с помощью функции event и добавляется в список res с помощью функции append.
+// Поле offset объекта p устанавливается равным ID последнего обновления + 1.
+// Метод возвращает список res и nil в качестве ошибки.
 func(p *Processor) Fetch(limit int)([]events.Event,error) {
 	updates, err := p.tg.Updates(p.offset,limit)
 	if err!= nil {
@@ -65,6 +82,7 @@ func(p *Processor) ProcessorMessage(event events.Event) error {
 	if err != nil {
 		return e.Wrap("can t process massege", err)
 	}
+	
 
 	if err := p.doCmd(event.Text, meta.chatID , meta.Usermame); err != nil {
 		return e.Wrap("can t process masage", err)

@@ -2,7 +2,6 @@ package telegram
 
 import (
 	"context"
-	"errors"
 	"log"
 	"net/url"
 	"strings"
@@ -16,14 +15,13 @@ const (
 	HelpCmd = "/help"
 	StartCmd = "/start"
 )
-func(p *Processor) doCmd(text string, chatID int,username string)error {
+func(p *Processor) doCmd(text string, chatID int,username string) error {
 	text= strings.TrimSpace(text)
 	log.Printf("got new coomand '%s' from '%s'",text, username )
 
+
 	if IsAddCmd(text){
-
-
-
+		return p.savePage(chatID,text , username)
 	}
 
 	switch text {
@@ -33,21 +31,40 @@ func(p *Processor) doCmd(text string, chatID int,username string)error {
 
 	case StartCmd:
 
-	}
     default:
+		return p.tg.SendMassage(chatID, msgUnknownCommand)
+	}
+
+	return nil
+
 }
 
-func (p *Processor) savePage(chatID int, pageURl string,  username string ) (err error) {
+func(p *Processor) savePage(chatID int, pageURl string,  username string ) (err error) {
 	defer func() { err = e.WrapIfErr("canr do command:save page ", err) }()
 
 	page := &storage.Page{
-		URL: pageURl,
-		UserName: username
+		URL:      pageURl,
+		UserName: username,
+	}
+	
+	isExists, err := p.storage.IsExists(context.Background(), page)
+	if err != nil {
+		return err
 	}
 
-	IsExists, err := p.
+	if isExists{
+		return p.tg.SendMassage(chatID,msgAlreadyExists)
+	}
 
-	
+	if err := p.storage.Save(context.Background(), page); err != nil {
+		return err
+	}
+
+	if err := p.tg.SendMassage(chatID, msgSaved); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 
