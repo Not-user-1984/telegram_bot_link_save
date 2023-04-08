@@ -129,23 +129,24 @@ func (s Storage) Remove(p *storage.Page) error{
 // Если произошла другая ошибка, функция возвращает false вместе с ошибкой,
 // содержащей сообщение об ошибке и исходную ошибку.
 // В конце функция возвращает true, если файл существует, или false, если он отсутствует, а также ошибку (если есть).
-func (s Storage)IsExists(p *storage.Page)(bool,error){
-	fileName,err := fName(p)
+func (s Storage) IsExists(p *storage.Page) (bool, error) {
+	fileName, err := fName(p)
 	if err != nil {
-		return false,e.Wrap("can't check if file exists",err)
+		return false, e.Wrap("can't check if file exists", err)
 	}
-	path := filepath.Join(s.basePath, p.UserName,fileName)
-	switch _, err = os.Stat(path); {
-	case errors.Is(err,os.ErrNotExist):
-		return false, nil
 
+	path := filepath.Join(s.basePath, p.UserName, fileName)
+
+	switch _, err = os.Stat(path); {
+	case errors.Is(err, os.ErrNotExist):
+		return false, nil
 	case err != nil:
-		msg := fmt.Sprintf("can't check if file %s exists",path)
+		msg := fmt.Sprintf("can't check if file %s exists", path)
+
 		return false, e.Wrap(msg, err)
 	}
 
 	return true, nil
-
 }
 // Этот код декодирует сохраненный файл страницы по заданному пути filePath
 // и возвращает десериализованный объект storage.Page.

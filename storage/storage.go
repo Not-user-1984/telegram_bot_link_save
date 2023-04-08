@@ -2,6 +2,7 @@ package storage
 
 import (
 	"crypto/sha1"
+	"errors"
 	"fmt"
 	"io"
 	"telegram_bot_link/lib/e"
@@ -17,6 +18,8 @@ type Storage interface {
 	Remove(p *Page)error
 	IsExists(p *Page)(bool, error)
 }
+
+var ErrNoSavedPages = errors.New("no saved pages ")
 
 // Структура данных Page представляет веб-страницу и имеет два поля:
 // URL, содержащее адрес страницы, и UserName,
