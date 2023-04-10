@@ -21,8 +21,8 @@ type Client struct {
 
 // Функция создает новый экземпляр клиента Telegram API. 
 // Она принимает два параметра - адрес хоста и токен API.
-func New(host string, token string) Client {
-	return Client{
+func New(host string, token string) *Client {
+	return &Client{
 		host:  host,
 		basePath: newBasePath(token),
 		client: http.Client{},

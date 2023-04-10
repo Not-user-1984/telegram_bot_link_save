@@ -33,7 +33,7 @@ func New(client *telegram.Client, storage storage.Storage) *Processor{
 }
 
 
-// Данный код является методом Fetch,
+// Данный код является методом Fatch,
 // определенным для структуры Processor 
 // Метод принимает два аргумента: 
 // указатель на объект типа Processor (p) и целочисленное значение limit.
@@ -48,7 +48,7 @@ func New(client *telegram.Client, storage storage.Storage) *Processor{
 // с помощью функции event и добавляется в список res с помощью функции append.
 // Поле offset объекта p устанавливается равным ID последнего обновления + 1.
 // Метод возвращает список res и nil в качестве ошибки.
-func(p *Processor) Fetch(limit int)([]events.Event,error) {
+func(p *Processor) Fatch(limit int)([]events.Event, error) {
 	updates, err := p.tg.Updates(p.offset,limit)
 	if err!= nil {
 		return nil, e.Wrap("cant get events", err)
@@ -71,9 +71,9 @@ func(p *Processor) Fetch(limit int)([]events.Event,error) {
 func (p *Processor) Process(event events.Event) error{
 	switch event.Type{
 	case events.Message:
-		    return p.ProcessorMessage(event)
+		return p.ProcessorMessage(event)
 	default:
-		    return e.Wrap("can t process massage", errUnknownEventType)
+		return e.Wrap("can t process massage", errUnknownEventType)
 	}
 }
 
@@ -91,9 +91,6 @@ func(p *Processor) ProcessorMessage(event events.Event) error {
 	return nil
 
 }
-
-
-
 
 func meta(event events.Event)(Meta, error) {
 	res, оk := event.Meta.(Meta)

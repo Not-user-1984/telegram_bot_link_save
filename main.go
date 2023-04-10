@@ -3,13 +3,31 @@ package main
 import (
 	"flag"
 	"log"
-	"telegram_bot_link/clients/telegram"
+    "telegram_bot_link/consumer/evant-consumer"
+
+	tgClient "telegram_bot_link/clients/telegram"
+	
+	"telegram_bot_link/events/telegram"
+	"telegram_bot_link/storage/files"
 )
 const (
 	tgBotHost = "api.telegram.org"
+    storagePath = "storage"
+    batchSize = 100
 )
 func main() {
-	tgClient = telegram.New(tgBotHost, mustToken())
+    eventsProcessor := telegram.New(
+        tgClient.New(tgBotHost,mustToken()),
+        files.New(storagePath),
+    )
+
+    log.Print("Запуск сервиса")
+
+    consumer := evant_consumer.New(eventsProcessor, eventsProcessor, batchSize)
+
+    if err:= consumer.Start();err != nil {
+        log.Fatal("сервис остановился")
+    }
 
 }
 

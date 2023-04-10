@@ -1,7 +1,6 @@
 package telegram
 
 import (
-	"context"
 	"errors"
 	"log"
 	"net/url"
@@ -24,7 +23,6 @@ func(p *Processor) doCmd(text string, chatID int,username string) error {
 	text= strings.TrimSpace(text)
 	log.Printf("got new coomand '%s' from '%s'",text, username )
 
-
 	if isAddCmd(text){
 		return p.savePage(chatID, text, username)
 	}
@@ -39,9 +37,8 @@ func(p *Processor) doCmd(text string, chatID int,username string) error {
     default:
 		return p.tg.SendMassage(chatID, msgUnknownCommand)
 	}
-
-	return nil
 }
+
 // savePage()Проверяются входные параметры, если какой-либо параметр не верен, то возвращается ошибка.
 // Создается объект Page с переданным URL и именем пользователя.
 // Проверяется, существует ли уже сохраненная страница в базе данных. Если страница уже сохранена, то возвращается сообщение об ошибке.
@@ -57,9 +54,7 @@ func (p *Processor) savePage(chatID int, pageURL string, username string) error 
 		UserName: username,
 	}
 
-	ctx := context.Background()
-
-	isExists, err := p.storage.IsExists(ctx, page)
+	isExists, err := p.storage.IsExists(page)
 	if err != nil {
 		return e.WrapIfErr("can't do command: save page", err)
 	}
@@ -71,7 +66,7 @@ func (p *Processor) savePage(chatID int, pageURL string, username string) error 
 		return nil
 	}
 
-	if err := p.storage.Save(ctx, page); err != nil {
+	if err := p.storage.Save(page); err != nil {
 		return e.WrapIfErr("can't save page", err)
 	}
 
@@ -92,7 +87,7 @@ func (p *Processor) savePage(chatID int, pageURL string, username string) error 
 func (p *Processor) sendRandom(chatID int, username string)(err error) {
 	defer func() { err = e.WrapIfErr("can't do command: can't send random",err)}()
 
-	page, err := p.storage.PickRandom(context.Background(), username)
+	page, err := p.storage.PickRandom(username)
 	if err != nil && !errors.Is(err, storage.ErrNoSavedPages) {
 		return err
 	}
@@ -104,7 +99,7 @@ func (p *Processor) sendRandom(chatID int, username string)(err error) {
 	if err := p.tg.SendMassage(chatID,page.URL); err != nil{
 		return err
 	}
-	return p.storage.Remove(context.Background(),page)
+	return p.storage.Remove(page)
 }
 
 // sendHelp() структуры Processor отправляет справочную информацию в указанный чат.
