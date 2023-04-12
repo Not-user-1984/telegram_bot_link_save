@@ -35,7 +35,7 @@ func(p *Processor) doCmd(text string, chatID int,username string) error {
 	case StartCmd:
 		return p.sendHello(chatID)
     default:
-		return p.tg.SendMassage(chatID, msgUnknownCommand)
+		return p.tg.SendMessage(chatID, msgUnknownCommand)
 	}
 }
 
@@ -60,7 +60,7 @@ func (p *Processor) savePage(chatID int, pageURL string, username string) error 
 	}
 
 	if isExists {
-		if err := p.tg.SendMassage(chatID, msgAlreadyExists); err != nil {
+		if err := p.tg.SendMessage(chatID, msgAlreadyExists); err != nil {
 			return e.WrapIfErr("can't send message: already exists", err)
 		}
 		return nil
@@ -70,7 +70,7 @@ func (p *Processor) savePage(chatID int, pageURL string, username string) error 
 		return e.WrapIfErr("can't save page", err)
 	}
 
-	if err := p.tg.SendMassage(chatID, msgSaved); err != nil {
+	if err := p.tg.SendMessage(chatID, msgSaved); err != nil {
 		return e.WrapIfErr("can't send message: saved", err)
 	}
 
@@ -84,32 +84,32 @@ func (p *Processor) savePage(chatID int, pageURL string, username string) error 
 // Если в хранилище нет сохраненных страниц, функция отправляет сообщение "no saved pages" в чат.
 // Затем она удаляет выбранную страницу из хранилища с помощью метода Remove() структуры storage.
 // Функция возвращает ошибку, если произошла ошибка при выборе случайной страницы или отправке сообщения.
-func (p *Processor) sendRandom(chatID int, username string)(err error) {
-	defer func() { err = e.WrapIfErr("can't do command: can't send random",err)}()
+func (p *Processor) sendRandom(chatID int, username string) (err error) {
+	defer func() { err = e.WrapIfErr("can't do command: can't send random", err) }()
 
-	page, err := p.storage.PickRandom(username)
+	page, err := p.storage.PickRandom( username)
 	if err != nil && !errors.Is(err, storage.ErrNoSavedPages) {
 		return err
 	}
-
-	if errors.Is(err,storage.ErrNoSavedPages) {
-		return p.tg.SendMassage(chatID, msgNoSavedPages)
+	if errors.Is(err, storage.ErrNoSavedPages) {
+		return p.tg.SendMessage(chatID,msgNoSavedPages)
 	}
 
-	if err := p.tg.SendMassage(chatID,page.URL); err != nil{
+	if err := p.tg.SendMessage(chatID, page.URL); err != nil {
 		return err
 	}
+
 	return p.storage.Remove(page)
 }
 
 // sendHelp() структуры Processor отправляет справочную информацию в указанный чат.
 func (p *Processor) sendHelp(chatID int) error{
-	return p.tg.SendMassage(chatID, msgHelp)
+	return p.tg.SendMessage(chatID, msgHelp)
 }
 
 // sendHello() структуры Processor отправляет приветственное сообщение в указанный чат
 func (p *Processor) sendHello(chatID int) error{
-	return p.tg.SendMassage(chatID, msgHello)
+	return p.tg.SendMessage(chatID, msgHello)
 }
 
 

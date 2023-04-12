@@ -75,26 +75,30 @@ func(s Storage)  Save(page *storage.Page) (err error) {
 // В противном случае функция декодирует выбранный файл и возвращает результат как объект *storage.Page.
 // Также заметим, что функция использует обработку ошибок с помощью defer
 // и вызывает метод WrapIfErr для добавления контекстной информации к ошибке в конце функции перед ее возвратом.
-func(s Storage)PickRandom(userName string)(page *storage.Page,err error){
-	defer func() {err = e.WrapIfErr("cant pick random", err)}()
+func (s Storage) PickRandom(userName string) (page *storage.Page, err error) {
+	defer func() { err = e.WrapIfErr("can't pick random page", err) }()
 
 	path := filepath.Join(s.basePath, userName)
-	files ,err := os.ReadDir(path)
-	if err!= nil{
+
+	// 1. check user folder
+	// 2. create folder
+
+	files, err := os.ReadDir(path)
+	if err != nil {
 		return nil, err
 	}
-	if len(files) ==0 {
-		return nil, errors.New("no saved page")
+
+	if len(files) == 0 {
+		return nil, storage.ErrNoSavedPages
 	}
+
 	rand.Seed(time.Now().UnixNano())
 	n := rand.Intn(len(files))
 
 	file := files[n]
 
 	return s.decodePage(filepath.Join(path, file.Name()))
-
 }
-
 // Этот код удаляет файл, соответствующий заданному объекту storage.Page
 // Функция получает имя файла, связанного с заданным объектом storage.Page, используя метод fName.
 // Если возникает ошибка при получении имени файла, функция возвращает ошибку.

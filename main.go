@@ -17,7 +17,7 @@ const (
 )
 func main() {
     eventsProcessor := telegram.New(
-        tgClient.New(tgBotHost,mustToken()),
+        tgClient.New(tgBotHost, mustToken()),
         files.New(storagePath),
     )
 
@@ -31,19 +31,20 @@ func main() {
 
 }
 
-func mustToken() string {
-    // Remove argument names.
-    token := flag.String(
-        "token-bot-token",
-        "",
-        "token for access to telegram bot",
-    )
-    
-    flag.Parse()
-    if *token == "" {
-        // Change error message to provide more information.
-        log.Fatal("Error: token not provided")
-    }
 
-    return *token
+func mustToken() string {
+	token := flag.String(
+		"tg-bot-token",
+		"",
+		"token for access to telegram bot",
+	)
+
+	flag.Parse()
+
+	if *token == "" {
+		log.Fatal("token is not specified")
+	}
+
+	return *token
 }
+
